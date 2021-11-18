@@ -17,9 +17,14 @@ export default function Home() {
   const [totalSales, setTotalSales] = useState(0)
   const [hasAccess, setHasAccess] = useState(false)
 
-  const connect = function () {
-    // TODO: setAccounts
-    // connect our page to the wallet
+  const connect = async function () {
+    const a = await window.ethereum.request({
+      method: "eth_requestAccounts"
+    })
+
+    setAccounts(a)
+
+
   }
 
   const checkAccess = function () {
