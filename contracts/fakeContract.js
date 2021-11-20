@@ -9,6 +9,14 @@ class PrismSale {
     canBuy() {
         return this.totalSales < this.maxSales
     }
+
+    hasAccess() {
+        ////
+    }
+
+    buy () {
+        ///
+    }
 }
 
 new sale = new PrismSale()
