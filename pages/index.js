@@ -18,11 +18,9 @@ export default function Home() {
   const [hasAccess, setHasAccess] = useState(false)
 
   const connect = async function () {
-    const a = await window.ethereum.request({
-      method: "eth_requestAccounts"
-    })
-
-    setAccounts(a)
+    window.ethereum
+      .request({method: "eth_requestAccounts"})
+      .then(setAccounts)
 
 
   }
@@ -31,18 +29,47 @@ export default function Home() {
     // TODO: setCanBuy
     // check if we have access
     // using accounts[0] and the contract
+    if(accounts.length > 0) {
+      contract.methods.hasAccess().call({
+        from: accounts[0]
+      })
+        .then(setHasAccess)
+    } else {
+      setHasAccess(false)
+    }
   }
 
   const fetchCanBuy = async function () {
     // TODO: setTotalSales + setCanBuy
     // check if we can buy it (not sold out)
     // and check how many sold
+
+    contract.methods.canBuy().call()
+      .then(setCanBuy)
+
+    contract.methods.totalSales().call()
+      .then(setTotalSales)
   }
 
   const buy = async function () {
     // TODO: transaction with contract
     // buy this from the contract by sending 0.01 ether
     // then once done, check access and update counts
+    if(accounts.length>0) {
+      try {
+        const transaction = await contract.methods.buy().send({
+          from: accounts[0],
+          value: web3.utils.toWei("0.01", "ether")
+        })
+
+        checkAccess()
+        fetchCanBuy()
+      } catch (e) {
+        alert(e)
+      }
+    } else {
+      "you need to log in"
+    }
   }
 
   const download = async function () {
@@ -70,6 +97,13 @@ export default function Home() {
   useEffect(() => {
     // TODO
     // set up wallet events and initial connection
+    window.ethereum
+      .request({method: "eth_requestAccounts"})
+      .then(setAccounts)
+
+     window.ethereum 
+      .on("accountsChanged", setAccounts) 
+
   }, [])
 
   useEffect(() => {
